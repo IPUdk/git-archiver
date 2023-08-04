@@ -9,5 +9,5 @@ To run, do:
 > Note: your GitLab Personal Access Token must have the `api` scope. `read_api` is not sufficient.
 
 ```bash
-GITLAB_API_TOKEN=<your_token> GITLAB_GROUP_ID=<your_group> python3 gitlab_archiver.sh
+GITLAB_API_TOKEN=<your_token> GITLAB_GROUP_ID=<your_group> python3 gitlab_archiver.py
 ```
