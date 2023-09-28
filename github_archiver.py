@@ -95,6 +95,34 @@ def create_migration(repo_name):
     log.info(f"Migration with migration_id={migration_id} created for {repo_name}")
 
     return response_obj
+
+
+def get_migration_status(migration_id):
+    """
+    Function for getting the status of a migration
+    """
+    log.info(f"Getting migration status for migration_id={migration_id}...")
+    # Define endpoint
+    endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{migration_id}"
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+    # Make request
+    response = requests.get(
+        endpoint,
+        headers=headers,
+    )
+    # Check response
+    if response.status_code != 200:
+        log.error(f"Error getting migration status for migration_id={migration_id}: {response.text}")
+        return None
+    # Convert JSON response to python object
+    response_obj = json.loads(response.text)  # Dict
+    migration_status = response_obj["state"]
+
+    log.info(f"Migration status for migration_id={migration_id} is {migration_status}")
+
+    return migration_status
 # Loop through the list of repositories and create a migration archive for each one
 repos = get_repos()
 for repo in repos:
