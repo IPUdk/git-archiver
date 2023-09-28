@@ -64,8 +64,10 @@ def get_repos():
     return repos
 
 
-# Function to create a migration archive for a repository
 def create_migration(repo_name):
+    """
+    Function to create a migration archive for a repository
+    """
     log.info(f"Starting generation migration archive for {repo_name}...")
     # Define endpoint
     endpoint = f"https://api.github.com/orgs/{org_name}/migrations"
