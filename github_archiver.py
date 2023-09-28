@@ -64,7 +64,7 @@ def get_repos():
     return repos
 
 
-def create_migration(repo_name):
+def create_migration_export(repo_name):
     """
     Function to create a migration archive for a repository
     """
