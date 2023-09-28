@@ -136,6 +136,43 @@ def download_file(url, filename):
             for chunk in r.iter_content(chunk_size=8192): # Iterate over streamed chunks
                 f.write(chunk)
     return filename
+
+
+def download_migration_export(repo_name, migration_id, file_name):
+    """
+    Download a migration archive for a repository
+    """
+    # Define endpoint
+    endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{migration_id}/archive"
+    # Define headers
+    headers = {"Authorization": f"Bearer {access_token}"}
+    # Make request
+    log.info(f"Getting migration archive download URL for {repo_name}...")
+    response = requests.get(
+        endpoint,
+        headers=headers,
+    )
+    # Check response
+    if response.status_code != 302 and response.status_code != 200:
+        log.error(f"Error downloading migration archive for {repo_name}: {response.text}")
+
+    log.info(f"Downloading migration archive for {repo_name} to {repo_name}.tar.gz...")
+    download_file(response.url, file_name)
+    log.info(f"Migration archive downloaded for {repo_name}")
+
+
+def download_project(repo_name, file_name):
+    """
+    Download a project as a repository archive
+    """
+    branch = ""  # "" = Default
+    url = f"https://api.github.com/repos/{org_name}/{repo_name}/tarball/{branch}"
+    log.info(f"Downloading project archive for {repo_name} to {repo_name}.tar.gz...")
+    download_file(url, file_name)
+    log.info(f"Project archive downloaded for {repo_name}")
+
+
+
 # Loop through the list of repositories and create a migration archive for each one
 repos = get_repos()
 for repo in repos:
