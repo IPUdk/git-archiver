@@ -50,11 +50,11 @@ def get_repos():
             log.error("  Got non-200 response!")
             break
         # Convert JSON response to python object
-        response_list = json.loads(response.text)
+        response_obj = json.loads(response.text)  # List of dicts
         # Add repos to list
-        repos.extend(response_list)
+        repos.extend(response_obj)
         # Check if there are no more repos to fetch
-        if len(response_list) < per_page:
+        if len(response_obj) < per_page:
             break
         # Increment page
         page += 1
