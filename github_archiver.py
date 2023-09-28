@@ -123,6 +123,19 @@ def get_migration_status(migration_id):
     log.info(f"Migration status for migration_id={migration_id} is {migration_status}")
 
     return migration_status
+
+
+def download_file(url, filename):
+    """
+    Download a file from a URL to a local file
+    """
+    log.info(f"Downloading {url} to {filename}...")
+    with requests.get(url, stream=True) as r: # Streaming
+        r.raise_for_status()
+        with open(filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192): # Iterate over streamed chunks
+                f.write(chunk)
+    return filename
 # Loop through the list of repositories and create a migration archive for each one
 repos = get_repos()
 for repo in repos:
