@@ -23,7 +23,7 @@ org_name = os.environ.get("GITHUB_ORG_NAME")  # Get the organization name
 
 def get_repos():
     """
-    Function to get the list of repositories for the organization
+    Get a list of repositories under the organization
     """
 
     log.info(f"Getting list of repos in organization \"{org_name}\"...")
@@ -66,7 +66,7 @@ def get_repos():
 
 def create_migration_export(repo_name):
     """
-    Function to create a migration archive for a repository
+    Create a request for a migration archive for a repository
     """
     log.info(f"Starting generation migration archive for {repo_name}...")
     # Define endpoint
@@ -99,7 +99,7 @@ def create_migration_export(repo_name):
 
 def get_migration_status(migration_id):
     """
-    Function for getting the status of a migration
+    Get the status of a migration
     """
     log.info(f"Getting migration status for migration_id={migration_id}...")
     # Define endpoint
