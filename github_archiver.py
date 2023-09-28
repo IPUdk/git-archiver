@@ -63,6 +63,36 @@ def get_repos():
 
     return repos
 
+
+# Function to create a migration archive for a repository
+def create_migration(repo_name):
+    log.info(f"Starting generation migration archive for {repo_name}...")
+    # Define endpoint
+    endpoint = f"https://api.github.com/orgs/{org_name}/migrations"
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+    # Define data
+    data = {"lock_repositories": True,  # Must be manually unlocked!
+            "lock_reason": "migrating",
+            "repositories": [f"{org_name}/{repo_name}"]}
+    # Make request
+    response = requests.post(
+        endpoint,
+        headers=headers,
+        data=json.dumps(data),
+    )
+    # Check response
+    if response.status_code != 201:
+        log.error(f"Error creating migration for {repo_name}: {response.text}")
+        return None
+    # Convert JSON response to python object
+    response_obj = json.loads(response.text)  # Dict
+    migration_id = response_obj["id"]
+
+    log.info(f"Migration with migration_id={migration_id} created for {repo_name}")
+
+    return response_obj
 # Loop through the list of repositories and create a migration archive for each one
 repos = get_repos()
 for repo in repos:
