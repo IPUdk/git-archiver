@@ -140,7 +140,6 @@ def unlock_repository(repo):
         endpoint,
         headers=headers
     )
-    print(response)
     # Check response
     if response.status_code != 204:
         log.error(f"Error unlocking {repo['name']}: status code: {response.status_code}, text: {response.text}")
@@ -262,10 +261,22 @@ def download_project(repo, file_path, ref=""):
 
 
 # Loop through the list of repositories and create a migration archive for each one
-repos_raw = get_repos()
 repos = []
-for repo in repos_raw:
-    repos.append({"id": repo["id"],
-                  "name": repo["name"],
-                  "sha": get_commit_sha(repo)})
-print(repos)
+try:
+    repos_raw = get_repos()
+    for repo in repos_raw:
+        r = {"id": repo["id"],
+            "name": repo["name"]}
+        r["sha"] = get_commit_sha(r)
+        r["migration_id"] = create_migration_export(r)
+        repos.append(r)
+
+    log.info(f"Processing repositories: {repos}")
+
+    for repo in repos:
+        download_migration_export(repo, "github-export")
+        download_project(repo, "github-export")
+
+finally:
+    for repo in repos:
+        unlock_repository(repo)
