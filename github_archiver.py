@@ -125,6 +125,40 @@ def get_migration_status(migration_id):
     return migration_status
 
 
+def get_commit_sha(repo_name, ref=""):
+    """
+    Get the commit SHA for a repository reference (defaults to the default branch)
+    """
+    specific_ref = ref != ""
+    log.info(f"Getting the commit SHA for {repo_name}{' at ' + ref if specific_ref else ''}...")
+    # Define endpoint
+    endpoint = f"https://api.github.com/repos/{org_name}/{repo_name}/commits{'/' + ref if specific_ref else ''}"
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+    # Make request
+    response = requests.get(
+        endpoint,
+        headers=headers,
+    )
+    # Check response
+    if response.status_code != 200:
+        log.error(f"Error getting the commit SHA: {response.text}")
+        return None
+    # Convert JSON response to python object
+    sha = ""
+    response_obj = json.loads(response.text)  # Dict or list of dicts depending on if a specific ref was provided
+    if specific_ref:
+        sha = response_obj["sha"]
+    else:
+        sha = response_obj[0]["sha"]
+
+    log.info(f"Commit SHA for {repo_name} at {'default' if ref == '' else ref} is {sha}")
+    
+    return sha
+
+
+
 def download_file(url, filename):
     """
     Download a file from a URL to a local file
