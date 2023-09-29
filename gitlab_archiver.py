@@ -69,7 +69,7 @@ for project in projects:
     log.info(f"Processing {project['name_with_namespace']} ({project['id']})")
 
     # Create directory
-    path = os.path.join(os.getcwd(), f"exports/{project['name_with_namespace']}")
+    path = os.path.join(os.getcwd(), f"exports/gitlab/{project['name_with_namespace']}")
     os.makedirs(path, exist_ok=True)
     log.info(f"  Exporting to {path}")
 
