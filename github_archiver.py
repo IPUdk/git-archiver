@@ -181,7 +181,7 @@ def get_commit_sha(repo, ref=""):
     return sha
 
 
-def download_file(url, file_name):
+def download_file(file_name, url, headers={}):
     """
     Download a file from a URL to a local file
     """
@@ -190,9 +190,6 @@ def download_file(url, file_name):
     dir = os.path.dirname(file_name)
     if dir != "":
         os.makedirs(dir, exist_ok=True)
-    # Define headers
-    headers = {"Accept": "application/vnd.github+json",
-               "Authorization": f"Bearer {access_token}"}
     # Make request and download file
     try:
         with requests.get(url, headers=headers, stream=True) as r: # Streaming
@@ -223,7 +220,8 @@ def download_migration_export(repo, file_path):
     # Define endpoint
     endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{repo['migration_id']}/archive"
     # Define headers
-    headers = {"Authorization": f"Bearer {access_token}"}
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
     # Make request
     log.info(f"Getting migration archive download URL for {repo['name']}...")
     response = requests.get(
@@ -234,9 +232,11 @@ def download_migration_export(repo, file_path):
     if response.status_code != 302 and response.status_code != 200:
         log.error(f"Error downloading migration archive for {repo['name']}: status code: {response.status_code}, text: {response.text}")
 
+    # Construct file name
     file_name = os.path.join(file_path, f"export_{repo['name']}_{repo['id']}.tar.gz")
     log.info(f"  Downloading migration archive for {repo['name']} to {file_name}...")
-    download_file(response.url, file_name)
+    # Get file
+    download_file(file_name, response.url, headers={}) # <-- Download URL is temporary and requires empty headers
     log.info(f"  Migration archive downloaded for {repo['name']}")
 
 
@@ -252,10 +252,18 @@ def download_project(repo, file_path, ref=""):
         return None
 
     specific_ref = ref != ""
+    
+    # Define endpoint
     url = f"https://api.github.com/repos/{org_name}/{repo['name']}/tarball/{ref if specific_ref else ''}"
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+
+    # Construct file name
     file_name = os.path.join(file_path, f"repository_archive_{repo['name']}_{repo['id']}_{repo['sha']}.tar.gz")
     log.info(f"  Downloading project archive for {repo['name']} to {file_name}...")
-    download_file(url, file_name)
+    # Get file
+    download_file(file_name, url, headers=headers) # <-- Requires authentication through headers due to private repositories
     log.info(f"  Project archive downloaded for {repo['name']}")
 
 
