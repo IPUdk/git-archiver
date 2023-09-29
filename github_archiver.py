@@ -92,7 +92,7 @@ def create_migration_export(repo_name):
     response_obj = json.loads(response.text)  # Dict
     migration_id = response_obj["id"]
 
-    log.info(f"Migration with migration_id={migration_id} created for {repo_name}")
+    log.info(f"  Migration with migration_id={migration_id} created for {repo_name}")
 
     return response_obj
 
@@ -120,7 +120,7 @@ def get_migration_status(migration_id):
     response_obj = json.loads(response.text)  # Dict
     migration_status = response_obj["state"]
 
-    log.info(f"Migration status for migration_id={migration_id} is {migration_status}")
+    log.info(f"  Migration status for migration_id={migration_id} is {migration_status}")
 
     return migration_status
 
@@ -153,7 +153,7 @@ def get_commit_sha(repo, ref=""):
     else:
         sha = response_obj[0]["sha"]
 
-    log.info(f"Commit SHA for {repo['name']} at {'default' if ref == '' else ref} is {sha}")
+    log.info(f"  Commit SHA for {repo['name']} at {'default' if ref == '' else ref} is {sha}")
 
     return sha
 
@@ -162,12 +162,7 @@ def download_file(url, file_name):
     """
     Download a file from a URL to a local file
     """
-    log.info(f"Downloading {url} to {file_name}...")
-    with requests.get(url, stream=True) as r: # Streaming
-        r.raise_for_status()
-        with open(file_name, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192): # Iterate over streamed chunks
-                f.write(chunk)
+    log.info(f"  Downloading {url} to {file_name}...")
     return file_name
 
 
@@ -190,9 +185,9 @@ def download_migration_export(repo, migration_id, file_path):
         log.error(f"Error downloading migration archive for {repo['name']}: {response.text}")
 
     file_name = os.path.join(file_path, f"export_{repo['name']}_{repo['id']}.tar.gz")
-    log.info(f"Downloading migration archive for {repo['name']} to {file_name}...")
+    log.info(f"  Downloading migration archive for {repo['name']} to {file_name}...")
     download_file(response.url, file_name)
-    log.info(f"Migration archive downloaded for {repo['name']}")
+    log.info(f"  Migration archive downloaded for {repo['name']}")
 
 
 def download_project(repo, file_path, ref=""):
@@ -204,7 +199,7 @@ def download_project(repo, file_path, ref=""):
     file_name = os.path.join(file_path, f"repository_archive_{repo['name']}_{repo['id']}_{repo['sha']}.tar.gz")
     log.info(f"Downloading project archive for {repo['name']} to {file_name}...")
     download_file(url, file_name)
-    log.info(f"Project archive downloaded for {repo['name']}")
+    log.info(f"  Project archive downloaded for {repo['name']}")
 
 
 
