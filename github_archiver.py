@@ -125,6 +125,30 @@ def get_migration_status(migration_id):
     return migration_status
 
 
+def unlock_repository(repo):
+    """
+    Create a request for unlocking a repository
+    """
+    log.info(f"Unlocking {repo['name']}...")
+    # Define endpoint
+    endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{repo['migration_id']}/repos/{repo['name']}/lock"
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+    # Make request
+    response = requests.delete(
+        endpoint,
+        headers=headers
+    )
+    print(response)
+    # Check response
+    if response.status_code != 204:
+        log.error(f"Error unlocking {repo['name']}: status code: {response.status_code}, text: {response.text}")
+        return
+
+    log.info(f"  Successfully unlocked {repo['name']}")
+
+
 def get_commit_sha(repo, ref=""):
     """
     Get the commit SHA for a repository reference (defaults to the default branch)
