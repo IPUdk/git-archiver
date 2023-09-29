@@ -163,6 +163,23 @@ def download_file(url, file_name):
     Download a file from a URL to a local file
     """
     log.info(f"  Downloading {url} to {file_name}...")
+    # Create directory if it doesn't exist
+    dir = os.path.dirname(file_name)
+    if dir != "":
+        os.makedirs(dir, exist_ok=True)
+    # Define headers
+    headers = {"Accept": "application/vnd.github+json",
+               "Authorization": f"Bearer {access_token}"}
+    # Make request and download file
+    try:
+        with requests.get(url, headers=headers, stream=True) as r: # Streaming
+            r.raise_for_status()
+            with open(file_name, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192): # Iterate over streamed chunks
+                    f.write(chunk)
+    except Exception as e:
+        log.error(f"Error downloading {url}: {e}")
+        return None
     return file_name
 
 
