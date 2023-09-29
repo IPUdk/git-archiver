@@ -217,6 +217,10 @@ def download_migration_export(repo, migration_id, file_path):
     if repo["migration_id"] is None:
         log.error(f"{repo['name']} has no migration ID!")
         return None
+    while get_migration_status(repo["migration_id"]) != "exported":
+        time.sleep(1)
+
+    # Get the download URL
     # Define endpoint
     endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{migration_id}/archive"
     # Define headers
