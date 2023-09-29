@@ -186,7 +186,7 @@ def download_file(url, file_name):
     """
     Download a file from a URL to a local file
     """
-    log.info(f"  Downloading {url} to {file_name}...")
+    log.info(f"    Downloading {url} to {file_name}...")
     # Create directory if it doesn't exist
     dir = os.path.dirname(file_name)
     if dir != "":
@@ -211,6 +211,12 @@ def download_migration_export(repo, migration_id, file_path):
     """
     Download a migration archive for a repository
     """
+    log.info(f"Downloading migration archive for {repo['name']}...")
+
+    # Wait for the migration to get ready
+    if repo["migration_id"] is None:
+        log.error(f"{repo['name']} has no migration ID!")
+        return None
     # Define endpoint
     endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{migration_id}/archive"
     # Define headers
@@ -235,10 +241,17 @@ def download_project(repo, file_path, ref=""):
     """
     Download a project at a repository reference (defaults to the default branch) as a repository archive
     """
+    log.info(f"Downloading project archive for {repo['name']}...")
+
+    # Wait for the migration to get ready
+    if repo["sha"] is None:
+        log.error(f"{repo['name']} has no SHA!")
+        return None
+
     specific_ref = ref != ""
     url = f"https://api.github.com/repos/{org_name}/{repo['name']}/tarball/{ref if specific_ref else ''}"
     file_name = os.path.join(file_path, f"repository_archive_{repo['name']}_{repo['id']}_{repo['sha']}.tar.gz")
-    log.info(f"Downloading project archive for {repo['name']} to {file_name}...")
+    log.info(f"  Downloading project archive for {repo['name']} to {file_name}...")
     download_file(url, file_name)
     log.info(f"  Project archive downloaded for {repo['name']}")
 
