@@ -207,7 +207,7 @@ def download_file(url, file_name):
     return file_name
 
 
-def download_migration_export(repo, migration_id, file_path):
+def download_migration_export(repo, file_path):
     """
     Download a migration archive for a repository
     """
@@ -222,7 +222,7 @@ def download_migration_export(repo, migration_id, file_path):
 
     # Get the download URL
     # Define endpoint
-    endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{migration_id}/archive"
+    endpoint = f"https://api.github.com/orgs/{org_name}/migrations/{repo['migration_id']}/archive"
     # Define headers
     headers = {"Authorization": f"Bearer {access_token}"}
     # Make request
