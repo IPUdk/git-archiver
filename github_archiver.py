@@ -282,8 +282,8 @@ try:
     log.info(f"Processing repositories: {repos}")
 
     for repo in repos:
-        download_migration_export(repo, "github-export")
-        download_project(repo, "github-export")
+        download_migration_export(repo, "export/github")
+        download_project(repo, "export/github")
 
 finally:
     for repo in repos:
