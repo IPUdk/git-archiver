@@ -64,11 +64,11 @@ def get_repos():
     return repos
 
 
-def create_migration_export(repo_name):
+def create_migration_export(repo):
     """
     Create a request for a migration archive for a repository
     """
-    log.info(f"Starting generation migration archive for {repo_name}...")
+    log.info(f"Starting generation migration archive for {repo['name']}...")
     # Define endpoint
     endpoint = f"https://api.github.com/orgs/{org_name}/migrations"
     # Define headers
@@ -77,7 +77,7 @@ def create_migration_export(repo_name):
     # Define data
     data = {"lock_repositories": True,  # Must be manually unlocked!
             "lock_reason": "migrating",
-            "repositories": [f"{org_name}/{repo_name}"]}
+            "repositories": [f"{org_name}/{repo['name']}"]}
     # Make request
     response = requests.post(
         endpoint,
@@ -86,15 +86,15 @@ def create_migration_export(repo_name):
     )
     # Check response
     if response.status_code != 201:
-        log.error(f"Error creating migration for {repo_name}: {response.text}")
+        log.error(f"Error creating migration for {repo['name']}: {response.text}")
         return None
     # Convert JSON response to python object
     response_obj = json.loads(response.text)  # Dict
     migration_id = response_obj["id"]
 
-    log.info(f"  Migration with migration_id={migration_id} created for {repo_name}")
+    log.info(f"  Migration with migration_id={migration_id} created for {repo['name']}")
 
-    return response_obj
+    return migration_id
 
 
 def get_migration_status(migration_id):
