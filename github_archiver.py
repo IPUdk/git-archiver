@@ -47,7 +47,7 @@ def get_repos():
                                         "page": page})
         # Check response
         if response.status_code != 200:
-            log.error("  Got non-200 response!")
+            log.error(f"Error getting repositories: status code: {response.status_code}, text: {response.text}")
             break
         # Convert JSON response to python object
         response_obj = json.loads(response.text)  # List of dicts
@@ -86,7 +86,7 @@ def create_migration_export(repo):
     )
     # Check response
     if response.status_code != 201:
-        log.error(f"Error creating migration for {repo['name']}: {response.text}")
+        log.error(f"Error creating migration for {repo['name']}: status code: {response.status_code}, text: {response.text}")
         return None
     # Convert JSON response to python object
     response_obj = json.loads(response.text)  # Dict
@@ -114,7 +114,7 @@ def get_migration_status(migration_id):
     )
     # Check response
     if response.status_code != 200:
-        log.error(f"Error getting migration status for migration_id={migration_id}: {response.text}")
+        log.error(f"Error getting migration status for migration_id={migration_id}: status code: {response.status_code}, text: {response.text}")
         return None
     # Convert JSON response to python object
     response_obj = json.loads(response.text)  # Dict
@@ -143,7 +143,7 @@ def get_commit_sha(repo, ref=""):
     )
     # Check response
     if response.status_code != 200:
-        log.error(f"Error getting the commit SHA: {response.text}")
+        log.error(f"Error getting the commit SHA: status code: {response.status_code}, text: {response.text}")
         return None
     # Convert JSON response to python object
     sha = ""
@@ -199,7 +199,7 @@ def download_migration_export(repo, migration_id, file_path):
     )
     # Check response
     if response.status_code != 302 and response.status_code != 200:
-        log.error(f"Error downloading migration archive for {repo['name']}: {response.text}")
+        log.error(f"Error downloading migration archive for {repo['name']}: status code: {response.status_code}, text: {response.text}")
 
     file_name = os.path.join(file_path, f"export_{repo['name']}_{repo['id']}.tar.gz")
     log.info(f"  Downloading migration archive for {repo['name']} to {file_name}...")
