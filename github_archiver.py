@@ -125,14 +125,14 @@ def get_migration_status(migration_id):
     return migration_status
 
 
-def get_commit_sha(repo_name, ref=""):
+def get_commit_sha(repo, ref=""):
     """
     Get the commit SHA for a repository reference (defaults to the default branch)
     """
     specific_ref = ref != ""
-    log.info(f"Getting the commit SHA for {repo_name}{' at ' + ref if specific_ref else ''}...")
+    log.info(f"Getting the commit SHA for {repo['name']}{' at ' + ref if specific_ref else ''}...")
     # Define endpoint
-    endpoint = f"https://api.github.com/repos/{org_name}/{repo_name}/commits{'/' + ref if specific_ref else ''}"
+    endpoint = f"https://api.github.com/repos/{org_name}/{repo['name']}/commits{'/' + ref if specific_ref else ''}"
     # Define headers
     headers = {"Accept": "application/vnd.github+json",
                "Authorization": f"Bearer {access_token}"}
@@ -153,26 +153,25 @@ def get_commit_sha(repo_name, ref=""):
     else:
         sha = response_obj[0]["sha"]
 
-    log.info(f"Commit SHA for {repo_name} at {'default' if ref == '' else ref} is {sha}")
-    
+    log.info(f"Commit SHA for {repo['name']} at {'default' if ref == '' else ref} is {sha}")
+
     return sha
 
 
-
-def download_file(url, filename):
+def download_file(url, file_name):
     """
     Download a file from a URL to a local file
     """
-    log.info(f"Downloading {url} to {filename}...")
+    log.info(f"Downloading {url} to {file_name}...")
     with requests.get(url, stream=True) as r: # Streaming
         r.raise_for_status()
-        with open(filename, 'wb') as f:
+        with open(file_name, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192): # Iterate over streamed chunks
                 f.write(chunk)
-    return filename
+    return file_name
 
 
-def download_migration_export(repo_name, migration_id, file_name):
+def download_migration_export(repo, migration_id, file_path):
     """
     Download a migration archive for a repository
     """
@@ -181,33 +180,39 @@ def download_migration_export(repo_name, migration_id, file_name):
     # Define headers
     headers = {"Authorization": f"Bearer {access_token}"}
     # Make request
-    log.info(f"Getting migration archive download URL for {repo_name}...")
+    log.info(f"Getting migration archive download URL for {repo['name']}...")
     response = requests.get(
         endpoint,
         headers=headers,
     )
     # Check response
     if response.status_code != 302 and response.status_code != 200:
-        log.error(f"Error downloading migration archive for {repo_name}: {response.text}")
+        log.error(f"Error downloading migration archive for {repo['name']}: {response.text}")
 
-    log.info(f"Downloading migration archive for {repo_name} to {repo_name}.tar.gz...")
+    file_name = os.path.join(file_path, f"export_{repo['name']}_{repo['id']}.tar.gz")
+    log.info(f"Downloading migration archive for {repo['name']} to {file_name}...")
     download_file(response.url, file_name)
-    log.info(f"Migration archive downloaded for {repo_name}")
+    log.info(f"Migration archive downloaded for {repo['name']}")
 
 
-def download_project(repo_name, file_name):
+def download_project(repo, file_path, ref=""):
     """
-    Download a project as a repository archive
+    Download a project at a repository reference (defaults to the default branch) as a repository archive
     """
-    branch = ""  # "" = Default
-    url = f"https://api.github.com/repos/{org_name}/{repo_name}/tarball/{branch}"
-    log.info(f"Downloading project archive for {repo_name} to {repo_name}.tar.gz...")
+    specific_ref = ref != ""
+    url = f"https://api.github.com/repos/{org_name}/{repo['name']}/tarball/{ref if specific_ref else ''}"
+    file_name = os.path.join(file_path, f"repository_archive_{repo['name']}_{repo['id']}_{repo['sha']}.tar.gz")
+    log.info(f"Downloading project archive for {repo['name']} to {file_name}...")
     download_file(url, file_name)
-    log.info(f"Project archive downloaded for {repo_name}")
+    log.info(f"Project archive downloaded for {repo['name']}")
 
 
 
 # Loop through the list of repositories and create a migration archive for each one
-repos = get_repos()
-for repo in repos:
-    print(f"{repo['id']}: {repo['name']}")
+repos_raw = get_repos()
+repos = []
+for repo in repos_raw:
+    repos.append({"id": repo["id"],
+                  "name": repo["name"],
+                  "sha": get_commit_sha(repo)})
+print(repos)
