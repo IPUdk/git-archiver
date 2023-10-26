@@ -313,12 +313,6 @@ if __name__ == "__main__":
     try:
         repos_raw = get_repos()
         for repo in repos_raw:
-
-            if repo["name"] in ["data-parser-anton-paar"]:
-                pass
-            else:
-                continue
-
             r = {"id": repo["id"], "name": repo["name"]}
             r["sha"] = get_commit_sha(r)
             r["migration_id"] = create_migration_export(r)
