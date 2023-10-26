@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-publish-binaries:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up python and poetry environment using custom action
+        uses: ./.github/actions/python-poetry-env
+      - name: Build wheels
+        run: poetry build --no-interaction --verbose
+      - name: Build binaries using pyinstaller
+        run: |
+          poetry run pyinstaller --clean --noconfirm --onefile git_archiver/github_archiver.py &&
+          poetry run pyinstaller --clean --noconfirm --onefile git_archiver/gitlab_archiver.py
+      - name: Upload artifacts (unix)
+        uses: actions/upload-artifact@v3
+        with:
+          name: git_archiver
+          path: |
+            dist/github_archiver
+            dist/gitlab_archiver
+        if: runner.os != 'Windows'
+      - name: Create archive containing binary (unix)
+        run: zip -j dist/git_archiver-${{ runner.os }}.zip dist/github_archiver dist/gitlab_archiver # -j: store just the name of a saved file (junk the path), and do not store directory names
+        if: runner.os != 'Windows'
+      - name: Upload artifacts (windows)
+        uses: actions/upload-artifact@v3
+        with:
+          name: git_archiver
+          path: |
+            dist/github_archiver.exe
+            dist/gitlab_archiver.exe
+        if: runner.os == 'Windows'
+      - name: Create archive containing binary (windows)
+        run: Compress-Archive -Path "dist/github_archiver.exe dist/gitlab_archiver.exe" -DestinationPath "dist/git_archiver-${{ runner.os }}.zip" 
+        if: runner.os == 'Windows'
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/git_archiver-${{ runner.os }}.zip
+        if: |
+          startsWith(github.ref, 'refs/tags/')

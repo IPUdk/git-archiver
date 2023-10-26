@@ -1,0 +1,43 @@
+name: 'Setup Python + Poetry environment'
+description: 'Setup Python + Poetry environment'
+
+inputs:
+  python-version:
+    required: false
+    description: 'Python version'
+    default: '3.9'
+outputs: {}
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{inputs.python-version}}
+    - name: Install poetry in bash
+      run: python -m pip install poetry
+      shell: bash
+      if: runner.os != 'Windows'
+    - name: Clean virtual environment in bash
+      run: |
+        rm -f poetry.lock
+        rm -rf .venv
+      shell: bash
+      if: runner.os != 'Windows'
+    - name: Create virtual environment in bash
+      run: poetry install -n
+      shell: bash
+      if: runner.os != 'Windows'
+    - name: Install poetry in cmd
+      run: python -m pip install poetry
+      shell: cmd
+      if: runner.os == 'Windows'
+    - name: Clean virtual environment in cmd
+      run: |
+        del /Q /F poetry.lock
+        del /Q /F .venv
+      shell: cmd
+      if: runner.os == 'Windows'
+    - name: Create virtual environment in cmd
+      run: poetry install -n
+      shell: cmd
+      if: runner.os == 'Windows'
