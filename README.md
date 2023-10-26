@@ -2,6 +2,8 @@
 
 This is a collection of simple scripts to export and archive projects in various version control systems.
 
+> Portable binaries are available on the [releases page](https://github.com/IPUdk/git-archiver/releases)
+
 ## GitHub
 
 The GitHub archiving script (`github_archiver.py`) is a Python script that uses the GitHub API to export and archive all projects in an *organization*.
