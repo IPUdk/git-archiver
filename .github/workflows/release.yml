@@ -31,22 +31,20 @@ jobs:
         with:
           name: git_archiver
           path: |
-            dist/github_archiver
-            dist/gitlab_archiver
+            dist/*_archiver
         if: runner.os != 'Windows'
       - name: Create archive containing binary (unix)
-        run: zip -j dist/git_archiver-${{ runner.os }}.zip dist/github_archiver dist/gitlab_archiver # -j: store just the name of a saved file (junk the path), and do not store directory names
+        run: zip -j dist/git_archiver-${{ runner.os }}.zip dist/*_archiver # -j: store just the name of a saved file (junk the path), and do not store directory names
         if: runner.os != 'Windows'
       - name: Upload artifacts (windows)
         uses: actions/upload-artifact@v3
         with:
           name: git_archiver
           path: |
-            dist/github_archiver.exe
-            dist/gitlab_archiver.exe
+            dist/*_archiver.exe
         if: runner.os == 'Windows'
       - name: Create archive containing binary (windows)
-        run: Compress-Archive -Path "dist/github_archiver.exe dist/gitlab_archiver.exe" -DestinationPath "dist/git_archiver-${{ runner.os }}.zip" 
+        run: Compress-Archive -Path "dist/*_archiver.exe" -DestinationPath "dist/git_archiver-${{ runner.os }}.zip" 
         if: runner.os == 'Windows'
       - name: Release
         uses: softprops/action-gh-release@v1
