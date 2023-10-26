@@ -26,23 +26,9 @@ jobs:
         run: |
           poetry run pyinstaller --clean --noconfirm --onefile git_archiver/github_archiver.py &&
           poetry run pyinstaller --clean --noconfirm --onefile git_archiver/gitlab_archiver.py
-      - name: Upload artifacts (unix)
-        uses: actions/upload-artifact@v3
-        with:
-          name: git_archiver
-          path: |
-            dist/*_archiver
-        if: runner.os != 'Windows'
       - name: Create archive containing binary (unix)
         run: zip -j dist/git_archiver-${{ runner.os }}.zip dist/*_archiver # -j: store just the name of a saved file (junk the path), and do not store directory names
         if: runner.os != 'Windows'
-      - name: Upload artifacts (windows)
-        uses: actions/upload-artifact@v3
-        with:
-          name: git_archiver
-          path: |
-            dist/*_archiver.exe
-        if: runner.os == 'Windows'
       - name: Create archive containing binary (windows)
         run: Compress-Archive -Path "dist/*_archiver.exe" -DestinationPath "dist/git_archiver-${{ runner.os }}.zip" 
         if: runner.os == 'Windows'
