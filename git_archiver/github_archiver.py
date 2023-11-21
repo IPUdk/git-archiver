@@ -308,6 +308,11 @@ if __name__ == "__main__":
     access_token = os.environ.get("GITHUB_API_TOKEN")  # Needs "repo", "admin:org" scope
     org_name = os.environ.get("GITHUB_ORG_NAME")  # Get the organization name
     repositories = os.environ.get("GITHUB_REPOSITORIES")  # Get the repositories to archive
+    if repositories is not None:
+        repositories = repositories.strip()
+        repositories = repositories.replace(",", " ")
+        repositories = repositories.replace(";", " ")
+        repositories = repositories.split(" ")
 
     # Loop through the list of repositories and create a migration archive for each one
     repos = []
