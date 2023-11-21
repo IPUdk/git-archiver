@@ -16,7 +16,15 @@ To run, do:
 > Note: your GitHub Personal Access Token must have the `admin:org` and `repo` scopes.
 
 ```bash
-GITHUB_API_TOKEN=<your_token> GITHUB_ORG_NAME=<your_org> python3 github_archiver.py
+GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" python3 github_archiver.py
+```
+
+Optionally, you can specify a list of repositories to archive by setting the `GITHUB_REPOSITORIES` environment variable to a list of repository names/IDs separated by spaces. The list will be interpreted as a filter, skipping repositories not listed.
+
+The following example will only archive the repositories `my-repo-name` and whichever repository has ID `12345678`:
+
+```bash
+GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" GITHUB_REPOSITORIES="my-repo-name 12345678" python3 github_archiver.py
 ```
 
 ## GitLab
@@ -31,5 +39,13 @@ To run, do:
 > Note: your GitLab Personal Access Token must have the `api` scope.
 
 ```bash
-GITLAB_API_TOKEN=<your_token> GITLAB_GROUP_ID=<your_group> python3 gitlab_archiver.py
+GITLAB_API_TOKEN="<your_token>" GITLAB_GROUP_ID="<your_group>" python3 gitlab_archiver.py
+```
+
+Optionally, you can specify a list of repositories to archive by setting the `GITLAB_REPOSITORIES` environment variable to a list of repository names/IDs separated by spaces. The list will be interpreted as a filter, skipping repositories not listed.
+
+The following example will only archive the repositories `my-repo-name` and whichever repository has ID `12345678`:
+
+```bash
+GITLAB_API_TOKEN="<your_token>" GITLAB_GROUP_ID="<your_group>" GITLAB_REPOSITORIES="my-repo-name 12345678" python3 gitlab_archiver.py
 ```

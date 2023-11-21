@@ -307,12 +307,26 @@ if __name__ == "__main__":
 
     access_token = os.environ.get("GITHUB_API_TOKEN")  # Needs "repo", "admin:org" scope
     org_name = os.environ.get("GITHUB_ORG_NAME")  # Get the organization name
+    repositories = os.environ.get("GITHUB_REPOSITORIES")  # Get the repositories to archive
+    if repositories is not None:
+        repositories = repositories.strip()
+        repositories = repositories.replace(",", " ")
+        repositories = repositories.replace(";", " ")
+        repositories = repositories.split(" ")
+        
+        log.info(f"Filtering by repositories: {repositories}")
 
     # Loop through the list of repositories and create a migration archive for each one
     repos = []
     try:
         repos_raw = get_repos()
         for repo in repos_raw:
+            # Filter repositories
+            if repositories is not None:
+                repo_in_filter = (str(repo["name"]) in repositories) or (str(repo["id"]) in repositories)
+                if repo_in_filter is False:
+                    log.info(f"Skipping {repo['name']} - not in filter")
+                    continue
             r = {"id": repo["id"], "name": repo["name"]}
             r["sha"] = get_commit_sha(r)
             r["migration_id"] = create_migration_export(r)
