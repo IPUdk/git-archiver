@@ -313,6 +313,8 @@ if __name__ == "__main__":
         repositories = repositories.replace(",", " ")
         repositories = repositories.replace(";", " ")
         repositories = repositories.split(" ")
+        
+        log.info(f"Filtering by repositories: {repositories}")
 
     # Loop through the list of repositories and create a migration archive for each one
     repos = []
