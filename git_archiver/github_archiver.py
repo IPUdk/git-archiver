@@ -316,7 +316,7 @@ if __name__ == "__main__":
         for repo in repos_raw:
             # Filter repositories
             if repositories is not None:
-                repo_in_filter = (str(repo["name"]) in repositories)
+                repo_in_filter = (str(repo["name"]) in repositories) or (str(repo["id"]) in repositories)
                 if repo_in_filter is False:
                     continue
             r = {"id": repo["id"], "name": repo["name"]}
