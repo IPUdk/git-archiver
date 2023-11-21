@@ -325,6 +325,7 @@ if __name__ == "__main__":
             if repositories is not None:
                 repo_in_filter = (str(repo["name"]) in repositories) or (str(repo["id"]) in repositories)
                 if repo_in_filter is False:
+                    log.info(f"Skipping {repo['name']} - not in filter")
                     continue
             r = {"id": repo["id"], "name": repo["name"]}
             r["sha"] = get_commit_sha(r)
