@@ -17,6 +17,7 @@ def recurse_groups_for_projects(group_id):
 
     projects += [
         {
+            "name": p.attributes["name"].replace(" ", ""),
             "name_with_namespace": p.attributes["name_with_namespace"].replace(" ", ""),
             "id": p.attributes["id"],
         }
@@ -48,6 +49,14 @@ if __name__ == "__main__":
 
     log.info("-" * 80)
     group_id = os.environ.get("GITLAB_GROUP_ID")  # Can be name or ID
+    repositories = os.environ.get("GITLAB_REPOSITORIES")  # Get the repositories to archive
+    if repositories is not None:
+        repositories = repositories.strip()
+        repositories = repositories.replace(",", " ")
+        repositories = repositories.replace(";", " ")
+        repositories = repositories.split(" ")
+        
+        log.info(f"Filtering by repositories: {repositories}")
     log.info(f"Starting export of projects in group {group_id}")
     log.info("Recursing groups to get projects: ")
     projects = recurse_groups_for_projects(group_id)
@@ -66,7 +75,14 @@ if __name__ == "__main__":
 
         # Log
         log.info(f"Project {str(i).zfill(digits)}/{str(total)}")
-        log.info(f"Processing {project['name_with_namespace']} ({project['id']})")
+
+        # Filter repositories
+        if repositories is not None:
+            repo_in_filter = (str(project["name"]) in repositories) or (str(project["id"]) in repositories)
+            if repo_in_filter is False:
+                log.info(f"Skipping {project['name']} - not in filter")
+                continue
+        log.info(f"Processing {project['name']} ({project['name_with_namespace']} - {project['id']})")
 
         # Create directory
         path = os.path.join(os.getcwd(), f"exports/gitlab/{project['name_with_namespace']}")
