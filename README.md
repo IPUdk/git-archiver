@@ -1,4 +1,4 @@
-# Repository Archiver
+# git-archiver
 
 This is a collection of simple scripts to export and archive projects in various version control systems.
 
