@@ -19,6 +19,12 @@ To run, do:
 GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" python3 github_archiver.py
 ```
 
+```powershell
+$env:GITHUB_API_TOKEN = '<your_token>'; $env:GITHUB_ORG_NAME = '<your_group>'
+poetry run python git_archiver\github_archiver.py
+Remove-Item Env:\GITHUB_API_TOKEN; Remove-Item Env:\GITHUB_ORG_NAME
+```
+
 Optionally, you can specify a list of repositories to archive by setting the `GITHUB_REPOSITORIES` environment variable to a list of repository names/IDs separated by spaces. The list will be interpreted as a filter, skipping repositories not listed.
 
 The following example will only archive the repositories `my-repo-name` and whichever repository has ID `12345678`:
@@ -26,6 +32,8 @@ The following example will only archive the repositories `my-repo-name` and whic
 ```bash
 GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" GITHUB_REPOSITORIES="my-repo-name 12345678" python3 github_archiver.py
 ```
+
+
 
 ## GitLab
 
@@ -40,6 +48,12 @@ To run, do:
 
 ```bash
 GITLAB_API_TOKEN="<your_token>" GITLAB_GROUP_ID="<your_group>" python3 gitlab_archiver.py
+```
+
+```powershell
+$env:GITLAB_API_TOKEN = '<your_token>'; $env:GITLAB_GROUP_ID = '<your_group>'
+poetry run python git_archiver\gitlab_archiver.py
+Remove-Item Env:\GITLAB_API_TOKEN; Remove-Item Env:\GITLAB_GROUP_ID
 ```
 
 Optionally, you can specify a list of repositories to archive by setting the `GITLAB_REPOSITORIES` environment variable to a list of repository names/IDs separated by spaces. The list will be interpreted as a filter, skipping repositories not listed.
