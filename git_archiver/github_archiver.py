@@ -123,7 +123,6 @@ def get_migration_status(migration_id):
 
     return migration_status
 
-
 def unlock_repository(repo):
     """
     Create a request for unlocking a repository
@@ -322,21 +321,41 @@ if __name__ == "__main__":
         repos_raw = get_repos()
         for repo in repos_raw:
             # Filter repositories
-            if repositories is not None:
+            if repositories:
                 repo_in_filter = (str(repo["name"]) in repositories) or (str(repo["id"]) in repositories)
                 if repo_in_filter is False:
                     log.info(f"Skipping {repo['name']} - not in filter")
                     continue
             r = {"id": repo["id"], "name": repo["name"]}
-            r["sha"] = get_commit_sha(r)
-            r["migration_id"] = create_migration_export(r)
             repos.append(r)
 
-        log.info(f"Processing repositories: {repos}")
+        log.info(f"Obtain the commit SHA for {len(repos)} repositories...")
+        for r in repos:
+            r["sha"] = get_commit_sha(r)
 
-        for repo in repos:
-            download_migration_export(repo, "exports/github")
-            download_project(repo, "exports/github")
+        log.info(f"Initiate export for {len(repos)} repositories...")
+        for r in repos:
+            r["migration_id"] = create_migration_export(r)
+
+        log.info(f"Download code and migration archives for {len(repos)} repositories...")
+        while repos:
+            for i, r in enumerate(repos):
+                status = get_migration_status(r["migration_id"])
+                if status == "failed":
+                    log.error(f"Migration for {r['name']} failed!")
+                    unlock_repository(r)
+                    repos.pop(i)
+                elif status == "exported":
+                    try:
+                        download_project(r, "exports/github")
+                        download_migration_export(r, "exports/github")
+                        unlock_repository(r)
+                        repos.pop(i)
+                    except Exception as e:
+                        log.error(f"Error downloading {r['name']}: {e}")
+                        unlock_repository(r)
+                        repos.pop(i)
+            time.sleep(1)
 
     finally:
         for repo in repos:

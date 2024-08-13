@@ -2,11 +2,11 @@
 name = "git-archiver"
 version = "0.1.2"
 description = ""
-authors = ["Albert Seligmann <ase@ipu.dk>"]
+authors = ["Jorrit Wronski <jowr@ipu.dk>", "Albert Seligmann <ase@ipu.dk>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8, <3.13"
+python = ">=3.11, <3.14"
 python-gitlab = "^3.15.0"
 pyinstaller = "^6.0.0"
 
