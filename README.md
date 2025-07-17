@@ -17,14 +17,14 @@ To run, do:
 
 > Note: your GitHub Personal Access Token (fine-grained permissions) must have read-only access to the following scopes:
 > - Repositories
->  - Contents
->  - Deployments
->  - Issues
->  - Metadata
->  - Pages
->  - Pull Requests
+>   - Contents
+>   - Deployments
+>   - Issues
+>   - Metadata
+>   - Pages
+>   - Pull Requests
 > - Organization
->  - Administration
+>   - Administration
  
 ```bash
 GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" python3 github_archiver.py
