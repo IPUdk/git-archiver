@@ -13,8 +13,18 @@ Downloads are placed next to the script in the `exports/github/` folder.
 
 To run, do:
 
-> Note: your GitHub Personal Access Token must have the `admin:org` and `repo` scopes.
-
+> ~Note: your GitHub Personal Access Token must have the `admin:org` and `repo` scopes.~
+> Note: your GitHub Personal Access Token (fine-grained permissions) must have read-only access to the following scopes:
+> - Repositories
+>  - Contents
+>  - Deployments
+>  - Issues
+>  - Metadata
+>  - Pages
+>  - Pull Requests
+> - Organization
+>  - Administration
+ 
 ```bash
 GITHUB_API_TOKEN="<your_token>" GITHUB_ORG_NAME="<your_org>" python3 github_archiver.py
 ```
