@@ -340,6 +340,12 @@ if __name__ == "__main__":
         log.info(f"Download code and migration archives for {len(repos)} repositories...")
         while repos:
             for i, r in enumerate(repos):
+                if repo["migration_id"] is None:
+                    log.error(f"{repo['name']} has no migration ID!")
+                    unlock_repository(r)
+                    repos.pop(i)
+                    continue
+                
                 status = get_migration_status(r["migration_id"])
                 if status == "failed":
                     log.error(f"Migration for {r['name']} failed!")
