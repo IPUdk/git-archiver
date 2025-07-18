@@ -340,8 +340,8 @@ if __name__ == "__main__":
         log.info(f"Download code and migration archives for {len(repos)} repositories...")
         while repos:
             for i, r in enumerate(repos):
-                if repo["migration_id"] is None:
-                    log.error(f"{repo['name']} has no migration ID!")
+                if r["migration_id"] is None:
+                    log.error(f"{r['name']} has no migration ID!")
                     unlock_repository(r)
                     repos.pop(i)
                     continue
